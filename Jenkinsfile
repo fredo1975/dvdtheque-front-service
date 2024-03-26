@@ -16,7 +16,7 @@ pipeline {
         )
         def GIT_BRANCH_NAME = getGitBranchName()
         def VERSION = getArtifactVersion(GIT_BRANCH_NAME,GIT_COMMIT_SHORT)
-        def ARTIFACT = "dvdtheque-rest-services-${VERSION}.jar"
+        def ARTIFACT = "dvdtheque-front-service-${VERSION}.jar"
     }
     stages {
         stage ('Initialize') {
@@ -151,25 +151,25 @@ pipeline {
             steps {
                 script {
 			 		sh """
-			 			scp target/$ARTIFACT jenkins@${DEV_SERVER1_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
+			 			scp target/$ARTIFACT jenkins@${DEV_SERVER1_IP}:/opt/dvdtheque_rest_service/dvdtheque-front-service.jar
 			 		"""
 			 		sh """
-			 			scp target/$ARTIFACT jenkins@${DEV_SERVER2_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
+			 			scp target/$ARTIFACT jenkins@${DEV_SERVER2_IP}:/opt/dvdtheque_rest_service/dvdtheque-front-service.jar
 			 		"""
 			 	}
             }
         }
-        stage('Copying production dvdtheque-rest-services') {
+        stage('Copying production dvdtheque-front-service') {
 	    	when {
                 branch 'master'
             }
             steps {
                 script {
                 	sh """
-			 			scp target/$ARTIFACT jenkins@${PROD_SERVER1_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
+			 			scp target/$ARTIFACT jenkins@${PROD_SERVER1_IP}:/opt/dvdtheque_rest_service/dvdtheque-front-service.jar
 			 		"""
 			 		sh """
-			 			scp target/$ARTIFACT jenkins@${PROD_SERVER2_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
+			 			scp target/$ARTIFACT jenkins@${PROD_SERVER2_IP}:/opt/dvdtheque_rest_service/dvdtheque-front-service.jar
 			 		"""
 			 	}
             }
