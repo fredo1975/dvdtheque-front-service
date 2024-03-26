@@ -130,7 +130,7 @@ pipeline {
 	    }
 	    stage('Stopping Prod1 Rest service') {
         	when {
-                branch 'master'
+                branch 'main'
             }
         	steps {
         		sh 'ssh jenkins@$PROD_SERVER1_IP sudo systemctl stop dvdtheque-rest.service'
@@ -138,7 +138,7 @@ pipeline {
 	    }
 	    stage('Stopping Prod2 Rest service') {
         	when {
-                branch 'master'
+                branch 'main'
             }
         	steps {
         		sh 'ssh jenkins@$PROD_SERVER2_IP sudo systemctl stop dvdtheque-rest.service'
@@ -161,7 +161,7 @@ pipeline {
         }
         stage('Copying production dvdtheque-front-service') {
 	    	when {
-                branch 'master'
+                branch 'main'
             }
             steps {
                 script {
@@ -192,7 +192,7 @@ pipeline {
    		}
    		stage('Sarting Prod1 Rest service') {
         	when {
-                branch 'master'
+                branch 'main'
             }
         	steps {
 	        	sh 'ssh jenkins@$PROD_SERVER1_IP sudo systemctl start dvdtheque-rest.service'
@@ -200,7 +200,7 @@ pipeline {
    		}
    		stage('Sarting Prod2 Rest service') {
    			when {
-                branch 'master'
+                branch 'main'
             }
         	steps {
 	        	sh 'ssh jenkins@$PROD_SERVER2_IP sudo systemctl start dvdtheque-rest.service'
@@ -228,7 +228,7 @@ pipeline {
 		}
 		stage('Check status Prod1 Rest service') {
 			when {
-                branch 'master'
+                branch 'main'
             }
 			steps {
 				script {
@@ -238,7 +238,7 @@ pipeline {
 		}
 		stage('Check status Prod2 Rest service') {
 			when {
-                branch 'master'
+                branch 'main'
             }
 			steps {
 				script {
