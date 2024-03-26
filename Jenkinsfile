@@ -16,10 +16,7 @@ pipeline {
         )
         def GIT_BRANCH_NAME = getGitBranchName()
         def VERSION = getArtifactVersion(GIT_BRANCH_NAME,GIT_COMMIT_SHORT)
-        def ARTIFACT = "dvdtheque-front-service-${VERSION}.jar"
-        def TMDB_ARTIFACT = "dvdtheque-tmdb-service-${VERSION}.jar"
-        def BATCH_ARTIFACT = "dvdtheque-batch-${VERSION}.jar"
-        def ALLOCINE_ARTIFACT = "dvdtheque-allocine-service-${VERSION}.jar"
+        def ARTIFACT = "dvdtheque-rest-services-${VERSION}.jar"
     }
     stages {
         stage ('Initialize') {
@@ -32,9 +29,6 @@ pipeline {
                     echo "DEV_SERVER2_IP = ${DEV_SERVER2_IP}"
                     echo "VERSION = ${VERSION}"
                     echo "ARTIFACT = ${ARTIFACT}"
-                    echo "TMDB_ARTIFACT = ${TMDB_ARTIFACT}"
-                    echo "BATCH_ARTIFACT = ${BATCH_ARTIFACT}"
-                    echo "ALLOCINE_ARTIFACT = ${ALLOCINE_ARTIFACT}"
                 '''
             }
         }
@@ -118,71 +112,68 @@ pipeline {
 		    	}
 		    }
         }
-        stage('Stopping Dev1 dvdtheque front service') {
+        stage('Stopping Dev1 Rest service') {
         	when {
                 branch 'develop'
             }
         	steps {
-	       		sh 'ssh jenkins@$DEV_SERVER1_IP sudo systemctl stop dvdtheque-front-service.service'
+	       		sh 'ssh jenkins@$DEV_SERVER1_IP sudo systemctl stop dvdtheque-rest.service'
 	       	}
 	    }
-	    stage('Stopping Dev2 dvdtheque front service') {
+	    stage('Stopping Dev2 Rest service') {
 	    	when {
                 branch 'develop'
             }
         	steps {
-	       		sh 'ssh jenkins@$DEV_SERVER2_IP sudo systemctl stop dvdtheque-front-service.service'
+	       		sh 'ssh jenkins@$DEV_SERVER2_IP sudo systemctl stop dvdtheque-rest.service'
 	       	}
 	    }
-	    stage('Stopping Prod1 dvdtheque front service') {
+	    stage('Stopping Prod1 Rest service') {
         	when {
                 branch 'master'
             }
         	steps {
-        		sh 'ssh jenkins@$PROD_SERVER1_IP sudo systemctl stop dvdtheque-front-service.service'
+        		sh 'ssh jenkins@$PROD_SERVER1_IP sudo systemctl stop dvdtheque-rest.service'
 	       	}
 	    }
-	    stage('Stopping Prod2 dvdtheque front service') {
+	    stage('Stopping Prod2 Rest service') {
         	when {
                 branch 'master'
             }
         	steps {
-        		sh 'ssh jenkins@$PROD_SERVER2_IP sudo systemctl stop dvdtheque-front-service.service'
+        		sh 'ssh jenkins@$PROD_SERVER2_IP sudo systemctl stop dvdtheque-rest.service'
 	       	}
 	    }
-	    
-	    stage('Copying develop dvdtheque-front-service') {
+	    stage('Copying develop dvdtheque-rest-services') {
 	    	when {
                 branch 'develop'
             }
             steps {
                 script {
 			 		sh """
-			 			scp dvdtheque-rest-services/target/$ARTIFACT jenkins@${DEV_SERVER1_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
+			 			scp target/$ARTIFACT jenkins@${DEV_SERVER1_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
 			 		"""
 			 		sh """
-			 			scp dvdtheque-rest-services/target/$ARTIFACT jenkins@${DEV_SERVER2_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
+			 			scp target/$ARTIFACT jenkins@${DEV_SERVER2_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
 			 		"""
 			 	}
             }
         }
-        
-        stage('Copying production dvdtheque-front-service') {
+        stage('Copying production dvdtheque-rest-services') {
 	    	when {
                 branch 'master'
             }
             steps {
                 script {
                 	sh """
-			 			scp dvdtheque-rest-services/target/$ARTIFACT jenkins@${PROD_SERVER1_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
+			 			scp target/$ARTIFACT jenkins@${PROD_SERVER1_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
 			 		"""
 			 		sh """
-			 			scp dvdtheque-rest-services/target/$ARTIFACT jenkins@${PROD_SERVER2_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
+			 			scp target/$ARTIFACT jenkins@${PROD_SERVER2_IP}:/opt/dvdtheque_rest_service/dvdtheque-rest-services.jar
 			 		"""
 			 	}
             }
         }
-        
         stage('Sarting Dev1 Rest service') {
         	when {
                 branch 'develop'
@@ -213,14 +204,6 @@ pipeline {
             }
         	steps {
 	        	sh 'ssh jenkins@$PROD_SERVER2_IP sudo systemctl start dvdtheque-rest.service'
-	        }
-   		}
-   		stage('Sarting Prod2 Batch service') {
-   			when {
-                branch 'master'
-            }
-        	steps {
-	        	sh 'ssh jenkins@$PROD_SERVER1_IP sudo systemctl start dvdtheque-batch.service'
 	        }
    		}
    		stage('Check status Dev1 Rest service') {
@@ -276,7 +259,7 @@ private String getArtifactVersion(String gitBranchName,String gitCommit){
 	if(gitBranchName == "develop"){
 		return "${gitCommit}-SNAPSHOT"
 	}
-	if(gitBranchName == "master"){
+	if(gitBranchName == "main"){
 		return "${gitCommit}"
 	}
 	return ""
